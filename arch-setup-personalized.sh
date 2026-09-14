@@ -300,7 +300,8 @@ if echo "$SELECTED_DESKTOPS" | grep -qw "niri"; then
         niri \
         waybar \
         swaybg grim slurp wl-clipboard \
-        mako \
+        udiskie \
+        polkit-gnome \
         awww
 
     # 安装 xwayland-satellite (AUR)
@@ -312,7 +313,7 @@ if echo "$SELECTED_DESKTOPS" | grep -qw "niri"; then
     else
         warn "未找到 paru，跳过 xwayland-satellite 安装 (手动: paru -S xwayland-satellite)"
     fi
-    log "✅ Niri + Waybar 已安装"
+    log "✅ Niri + Waybar + udiskie 已安装"
 fi
 
 # 检查是否选择了 i3
@@ -408,12 +409,24 @@ if echo "$SELECTED_DESKTOPS" | grep -qw "niri"; then
         warn "仓库中未找到 .config/waybar，跳过"
     fi
 
-    log "复制 mako 配置..."
-    mkdir -p "${HOME_DIR}/.config/mako"
-    if [[ -d "${REPO_DIR}/.config/mako" ]]; then
-        cp -r "${REPO_DIR}/.config/mako/." "${HOME_DIR}/.config/mako/"
-        chown -R "${REAL_USER}:${REAL_USER}" "${HOME_DIR}/.config/mako"
-        log "✅ mako 配置已从仓库复制"
+    log "复制 udiskie 配置..."
+    mkdir -p "${HOME_DIR}/.config/udiskie"
+    if [[ -f "${REPO_DIR}/.config/udiskie/config.yml" ]]; then
+        cp "${REPO_DIR}/.config/udiskie/config.yml" "${HOME_DIR}/.config/udiskie/config.yml"
+        chown -R "${REAL_USER}:${REAL_USER}" "${HOME_DIR}/.config/udiskie"
+        log "✅ udiskie 配置已从仓库复制"
+    else
+        # 仓库没有时写入一份最小可用配置
+        cat > "${HOME_DIR}/.config/udiskie/config.yml" << 'EOF'
+program_options:
+  tray: auto
+  notify: true
+  automount: true
+  password_cache: true
+  file_manager: thunar
+EOF
+        chown -R "${REAL_USER}:${REAL_USER}" "${HOME_DIR}/.config/udiskie"
+        log "✅ udiskie 默认配置已写入 ~/.config/udiskie/config.yml"
     fi
 fi
 
@@ -823,6 +836,7 @@ info "  ✅ SSH + NetworkManager 网络服务"
 info "  ✅ GRUB + hyperfluent 主题美化"
 info "  ✅ Ryzen 动态温控墙 (仓库脚本 ryzenadj-optimization.sh, systemd Type=simple)"
 info "  ✅ 壁纸轮换 + Wallpaper Engine (仅 i3)"
+info "  ✅ Niri 通知/挂载: udiskie (U 盘自动挂载 + 托盘 + 通知)"
 info ""
 info "安装后建议手动操作:"
 info "  1. 配置 ~/wallpaper-engine-using-wine (如未 clone: git clone https://github.com/m3t4f1v3/wallpaper-engine-using-wine)"
@@ -830,5 +844,7 @@ info "  2. 鸣潮启动器修复: ~/.local/bin/wuwalauncherfix.sh (需 wine 已�
 info "  3. 若仓库壁纸不足，可额外拉取: git clone https://github.com/2112992430/awww- ~/wallpapers-extra"
 info "  4. KDE/SonicDE 首次登录后可在系统设置中调整 SDDM 主题"
 info "  5. 检查动态温控服务状态: systemctl status ryzenadj-optimization.service"
+info "  6. Niri 中确认 config.kdl 已有: spawn-at-startup \"udiskie\" \"--tray\""
+info "     若无，可手动添加；polkit 授权代理用 polkit-gnome 已在 niri 环境装好"
 
 exit 0
