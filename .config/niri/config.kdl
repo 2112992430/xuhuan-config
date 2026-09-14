@@ -273,6 +273,7 @@ layout {
 // See the binds section below for more spawn examples.
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
+spawn-at-startup "udiskie" "--no-notify" "--no-tray"
 spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri & /usr/lib/xdg-desktop-portal-gnome"
 spawn-at-startup "waybar"
 spawn-at-startup "sh" "-c" "/home/xuhuan/.local/bin/random-wallpaper-awww.sh"
