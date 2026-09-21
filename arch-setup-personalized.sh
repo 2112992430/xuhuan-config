@@ -204,8 +204,7 @@ retry pacman -Syu --noconfirm --needed \
     pipewire pipewire-alsa pipewire-pulse pipewire-jack \
     xdg-user-dirs xdg-utils \
     man-db man-pages \
-    sudo \
-    whiptail
+    sudo 
 
 # 重新生成 boot 配置（新内核安装后 GRUB/mkinitcpio 需要刷新）
 log "重新生成 boot 配置..."
